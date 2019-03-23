@@ -6,537 +6,553 @@ import java.util.Scanner;
 
 public class AVLTree {
 
-	private AVLTreeNode root = null;
+    private AVLTreeNode root = null;
 
-	public void insert(int value) {
-		AVLTreeNode newNode = AVLTreeNode.createNode(value);
-		if (root == null) {
-			root = newNode;
-		} else {
-			insertBST(newNode, root);
-			trackUnbalancedNode(newNode);
-		}
-	}
+    public void insert(int value) {
+        AVLTreeNode newNode = AVLTreeNode.createNode(value);
+        if (root == null) {
+            root = newNode;
+        } else {
+            insertBST(newNode, root);
+            trackUnbalancedNode(newNode);
+        }
+    }
 
-	/**
-	 * Recursive binary search insertion
-	 * 
-	 * @param newNode
-	 * @param node
-	 * @return
-	 */
-	private AVLTreeNode insertBST(AVLTreeNode newNode, AVLTreeNode node) {
-		if (node.getValue() > newNode.getValue()) {
-			if (node.getLeftSubTree() == null) {
-				node.setLeftSubTree(newNode);
-				newNode.setParent(node);
-				return newNode;
-			} else {
-				return insertBST(newNode, node.getLeftSubTree());
-			}
-		} else {
-			if (node.getRightSubTree() == null) {
-				node.setRightSubTree(newNode);
-				newNode.setParent(node);
-				return newNode;
-			} else {
-				return insertBST(newNode, node.getRightSubTree());
-			}
-		}
-	}
+    /**
+     * Recursive binary search insertion
+     *
+     * @param newNode
+     * @param node
+     * @return
+     */
+    private AVLTreeNode insertBST(AVLTreeNode newNode, AVLTreeNode node) {
+        if (node.getValue() > newNode.getValue()) {
+            if (node.getLeftSubTree() == null) {
+                node.setLeftSubTree(newNode);
+                newNode.setParent(node);
+                return newNode;
+            } else {
+                return insertBST(newNode, node.getLeftSubTree());
+            }
+        } else {
+            if (node.getRightSubTree() == null) {
+                node.setRightSubTree(newNode);
+                newNode.setParent(node);
+                return newNode;
+            } else {
+                return insertBST(newNode, node.getRightSubTree());
+            }
+        }
+    }
 
-	private void delete(int value) {
-		AVLTreeNode actionPositionNode = deleteBST(value, root);
-		traverseUpAndDoTriNodeRestructing(actionPositionNode);
-	}
+    private void delete(int value) {
+        AVLTreeNode actionPositionNode = deleteBST(value, root);
+        traverseUpAndDoToriNodeRestructuring(actionPositionNode);
+    }
 
-	/**
-	 * Deletion on a binary search tree
-	 * 
-	 * @param value
-	 * @param node
-	 * @return
-	 */
-	private AVLTreeNode deleteBST(int value, AVLTreeNode node) {
-		if (node == null)
-			return null;
-		if (node.getValue() > value) {
-			return deleteBST(value, node.getLeftSubTree());
-		} else if (node.getValue() < value) {
-			return deleteBST(value, node.getRightSubTree());
-		} else {
-			AVLTreeNode actionPositionNode = null;
-			if (node.getLeftSubTree() == null && node.getRightSubTree() == null) {
-				actionPositionNode = deleteLeafNode(node);
-			} else {
-				if (node.getLeftSubTree() != null && node.getRightSubTree() != null) {
-					AVLTreeNode inOrderSuccessor = getInOrderSuccessor(node);
-					actionPositionNode = inOrderSuccessor.getParent();
-					substituteInOrderSuccessorWithItsRightChild(inOrderSuccessor);
-					replceDeletingNodeWithInOrderSuccessor(node, inOrderSuccessor);
-				} else {
-					actionPositionNode = replaceDeletingWithItsOnlyChild(node);
-				}
-			}
-			return actionPositionNode;
-		}
-	}
+    /**
+     * Deletion on a binary search tree
+     *
+     * @param value
+     * @param node
+     * @return
+     */
+    private AVLTreeNode deleteBST(int value, AVLTreeNode node) {
+        if (node == null)
+            return null;
+        if (node.getValue() > value) {
+            return deleteBST(value, node.getLeftSubTree());
+        } else if (node.getValue() < value) {
+            return deleteBST(value, node.getRightSubTree());
+        } else {
+            AVLTreeNode actionPositionNode = null;
+            if (node.getLeftSubTree() == null && node.getRightSubTree() == null) {
+                actionPositionNode = deleteLeafNode(node);
+            } else {
+                if (node.getLeftSubTree() != null && node.getRightSubTree() != null) {
+                    AVLTreeNode inOrderSuccessor = getInOrderSuccessor(node);
+                    actionPositionNode = inOrderSuccessor.getParent();
+                    substituteInOrderSuccessorWithItsRightChild(inOrderSuccessor);
+                    replceDeletingNodeWithInOrderSuccessor(node, inOrderSuccessor);
+                } else {
+                    actionPositionNode = replaceDeletingWithItsOnlyChild(node);
+                }
+            }
+            return actionPositionNode;
+        }
+    }
 
-	private AVLTreeNode deleteLeafNode(AVLTreeNode node) {
-		AVLTreeNode parent = node.getParent();
-		if (isLeftChild(node)) {
-			makeAsLeftChild(parent, null);
-		} else if (isRightChild(node)) {
-			makeAsRightChild(parent, null);
-		} else {
-			root = null;
-		}
-		updateHeight(parent);
-		node.setParent(null);
-		return parent;
-	}
+    private AVLTreeNode deleteLeafNode(AVLTreeNode node) {
+        AVLTreeNode parent = node.getParent();
+        if (isLeftChild(node)) {
+            makeAsLeftChild(parent, null);
+        } else if (isRightChild(node)) {
+            makeAsRightChild(parent, null);
+        } else {
+            root = null;
+        }
+        updateHeight(parent);
+        node.setParent(null);
+        return parent;
+    }
 
-	private AVLTreeNode getInOrderSuccessor(AVLTreeNode node) {
-		// go to right child
-		node = node.getRightSubTree();
-		while (node.getLeftSubTree() != null) {
-			node = node.getLeftSubTree();
-		}
-		return node;
-	}
+    private AVLTreeNode getInOrderSuccessor(AVLTreeNode node) {
+        // go to right child
+        node = node.getRightSubTree();
+        while (node.getLeftSubTree() != null) {
+            node = node.getLeftSubTree();
+        }
+        return node;
+    }
 
-	/**
-	 * Move up along path to root and balance node if any
-	 * 
-	 * @param node
-	 */
-	private void trackUnbalancedNode(AVLTreeNode node) {
-		AVLTreeNode z = null, y = null, x = null;
-		while (node != null) {
-			x = y;
-			y = z;
-			z = node;
-			updateHeight(z);
-			if (!z.isBalanced()) {
-				if (z.getLeftSubTree() == y && y.getLeftSubTree() == x) {
-					leftLeftCase(z);
-				} else if (z.getLeftSubTree() == y && y.getRightSubTree() == x) {
-					leftRightCase(z);
-				} else if (z.getRightSubTree() == y && y.getRightSubTree() == x) {
-					rightRightCase(z);
-				} else if (z.getRightSubTree() == y && y.getLeftSubTree() == x) {
-					rightLeftCase(z);
-				}
-				node = node.getParent().getParent();
-			} else {
-				node = node.getParent();
-			}
-		}
-	}
+    /**
+     * Move up along path to root and balance node if any
+     *
+     * @param node
+     */
+    private void trackUnbalancedNode(AVLTreeNode node) {
+        AVLTreeNode z = null;
+        AVLTreeNode y = null;
+        AVLTreeNode x;
+        while (node != null) {
+            x = y;
+            y = z;
+            z = node;
+            updateHeight(z);
+            if (!z.isBalanced()) {
+                if (z.getLeftSubTree() == y && y !=null && y.getLeftSubTree() == x) {
+                    leftLeftCase(z);
+                } else if (z.getLeftSubTree() == y &&  y !=null && y.getRightSubTree() == x) {
+                    leftRightCase(z);
+                } else if (z.getRightSubTree() == y &&  y !=null && y.getRightSubTree() == x) {
+                    rightRightCase(z);
+                } else if (z.getRightSubTree() == y &&  y !=null && y.getLeftSubTree() == x) {
+                    rightLeftCase(z);
+                }
+                node = node.getParent().getParent();
+            } else {
+                node = node.getParent();
+            }
+        }
+    }
 
-	/**
-	 * On deletion move up along the path to root and perform Trinode restructuring
-	 * for balancing
-	 * 
-	 * @param node
-	 */
-	private void traverseUpAndDoTriNodeRestructing(AVLTreeNode node) {
-		AVLTreeNode x, y, z;
-		while (node != null) {
-			z = node;
-			updateHeight(z);
-			if (!z.isBalanced()) {
-				int zLeftHeight = z.getLeftSubTree() == null ? -1 : z.getLeftSubTree().getHeight();
-				int zRightHeight = z.getRightSubTree() == null ? -1 : z.getRightSubTree().getHeight();
-				y = zLeftHeight >= zRightHeight ? z.getLeftSubTree() : z.getRightSubTree();
-				int yLeftHeight = y.getLeftSubTree() == null ? -1 : y.getLeftSubTree().getHeight();
-				int yRightHeight = y.getRightSubTree() == null ? -1 : y.getRightSubTree().getHeight();
-				x = yLeftHeight >= yRightHeight ? y.getLeftSubTree() : y.getRightSubTree();
-				node = triNodeRestructuring(z, y, x);
-			}
-			node = node.getParent();
-		}
-	}
+    /**
+     * On deletion move up along the path to root and perform Trinode restructuring
+     * for balancing
+     *
+     * @param node
+     */
+    private void traverseUpAndDoToriNodeRestructuring(AVLTreeNode node) {
 
-	/**
-	 * Tri node restructuring algorithm
-	 * 
-	 * @param z
-	 * @param y
-	 * @param x
-	 * @return
-	 */
-	private AVLTreeNode triNodeRestructuring(AVLTreeNode z, AVLTreeNode y, AVLTreeNode x) {
-		AVLTreeNode a, b, c;
-		AVLTreeNode t1, t2, t3,t4;
-		if (z.getLeftSubTree() == y && y.getLeftSubTree() == x) {
-			c = z;
-			b = y;
-			a = x;
-			t1 = a.getLeftSubTree();
-			t2  = a.getRightSubTree();
-			t3 = b.getRightSubTree();
-			t4 = c.getRightSubTree();
-		} else if (z.getLeftSubTree() == y && y.getRightSubTree() == x) {
-			c = z;
-			b = x;
-			a = y;
-			t1 = a.getLeftSubTree();
-			t2  = b.getLeftSubTree();
-			t3 = b.getRightSubTree();
-			t4 = c.getRightSubTree();
-		} else if (z.getRightSubTree() == y && y.getRightSubTree() == x) {
-			c = x;
-			b = y;
-			a = z;
-			t1 = a.getLeftSubTree();
-			t2  = b.getLeftSubTree();
-			t3 = c.getLeftSubTree();
-			t4 = c.getRightSubTree();
-		} else {
-			c = y;
-			b = x;
-			a = z;
-			t1 = a.getLeftSubTree();
-			t2  = b.getLeftSubTree();
-			t3 = b.getRightSubTree();
-			t4 = c.getRightSubTree();
-		}
+        AVLTreeNode z;
+        while (node != null) {
+            z = node;
+            updateHeight(z);
+            if (!z.isBalanced()) {
+                node = balanceUnBalancedNode(z);
+            }
+            node = node.getParent();
+        }
+    }
 
-		if (isRightChild(z)) {
-			makeAsRightChild(z.getParent(), b);
-		} else if (isLeftChild(z)) {
-			makeAsLeftChild(z.getParent(), b);
-		} else {
-			b.setParent(z.getParent());
-		}
-		if (b.getParent() == null) {
-			root = b;
-		}
-		// make sub trees t1, t2, t3, t4 as children of a & c
-		makeAsLeftChild(a,t1);
-		makeAsRightChild(a, t2);
-		makeAsLeftChild(c, t3);
-		makeAsRightChild(c, t4);
-		// make a & c as children of b
-		makeAsLeftChild(b, a);
-		makeAsRightChild(b, c);
+    private AVLTreeNode balanceUnBalancedNode(AVLTreeNode unBalancedNode) {
+        AVLTreeNode x;
+        AVLTreeNode y;
+        int zLeftHeight = unBalancedNode.getLeftSubTree() == null ? -1 : unBalancedNode.getLeftSubTree().getHeight();
+        int zRightHeight = unBalancedNode.getRightSubTree() == null ? -1 : unBalancedNode.getRightSubTree().getHeight();
+        y = zLeftHeight >= zRightHeight ? unBalancedNode.getLeftSubTree() : unBalancedNode.getRightSubTree();
+        int yLeftHeight = y.getLeftSubTree() == null ? -1 : y.getLeftSubTree().getHeight();
+        int yRightHeight = y.getRightSubTree() == null ? -1 : y.getRightSubTree().getHeight();
+        x = yLeftHeight >= yRightHeight ? y.getLeftSubTree() : y.getRightSubTree();
+        return triNodeRestructuring(unBalancedNode, y, x);
+    }
 
-		updateHeight(a);
-		updateHeight(c);
-		updateHeight(b);
-		return b;
-	}
+    /**
+     * Tri node restructuring algorithm
+     *
+     * @param z
+     * @param y
+     * @param x
+     * @return
+     */
+    private AVLTreeNode triNodeRestructuring(AVLTreeNode z, AVLTreeNode y, AVLTreeNode x) {
+        AVLTreeNode a;
+        AVLTreeNode b;
+        AVLTreeNode c;
+        AVLTreeNode t1;
+        AVLTreeNode t2;
+        AVLTreeNode t3;
+        AVLTreeNode t4;
+        if (z.getLeftSubTree() == y && y.getLeftSubTree() == x) {
+            c = z;
+            b = y;
+            a = x;
+            t1 = a.getLeftSubTree();
+            t2 = a.getRightSubTree();
+            t3 = b.getRightSubTree();
+            t4 = c.getRightSubTree();
+        } else if (z.getLeftSubTree() == y && y.getRightSubTree() == x) {
+            c = z;
+            b = x;
+            a = y;
+            t1 = a.getLeftSubTree();
+            t2 = b.getLeftSubTree();
+            t3 = b.getRightSubTree();
+            t4 = c.getRightSubTree();
+        } else if (z.getRightSubTree() == y && y.getRightSubTree() == x) {
+            c = x;
+            b = y;
+            a = z;
+            t1 = a.getLeftSubTree();
+            t2 = b.getLeftSubTree();
+            t3 = c.getLeftSubTree();
+            t4 = c.getRightSubTree();
+        } else {
+            c = y;
+            b = x;
+            a = z;
+            t1 = a.getLeftSubTree();
+            t2 = b.getLeftSubTree();
+            t3 = b.getRightSubTree();
+            t4 = c.getRightSubTree();
+        }
 
-	private AVLTreeNode replaceDeletingWithItsOnlyChild(AVLTreeNode deletingNode) {
-		AVLTreeNode rightChild = deletingNode.getRightSubTree();
-		AVLTreeNode leftChild = deletingNode.getLeftSubTree();
-		AVLTreeNode nonNullChild = rightChild != null ? rightChild : leftChild;
-		AVLTreeNode parent = deletingNode.getParent();
-		if (nonNullChild != null) {
-			nonNullChild.setParent(parent);
-		}
-		if (isLeftChild(deletingNode)) {
-			makeAsLeftChild(parent, nonNullChild);
-		} else {
-			makeAsRightChild(parent, nonNullChild);
-		}
-		if (nonNullChild.getParent() == null) {
-			root = nonNullChild;
-		}
-		updateHeight(parent);
-		return nonNullChild;
-	}
+        if (isRightChild(z)) {
+            makeAsRightChild(z.getParent(), b);
+        } else if (isLeftChild(z)) {
+            makeAsLeftChild(z.getParent(), b);
+        } else {
+            b.setParent(z.getParent());
+        }
+        if (b.getParent() == null) {
+            root = b;
+        }
+        // make sub trees t1, t2, t3, t4 as children of a & c
+        makeAsLeftChild(a, t1);
+        makeAsRightChild(a, t2);
+        makeAsLeftChild(c, t3);
+        makeAsRightChild(c, t4);
+        // make a & c as children of b
+        makeAsLeftChild(b, a);
+        makeAsRightChild(b, c);
 
-	private void substituteInOrderSuccessorWithItsRightChild(AVLTreeNode inOrderSuccessor) {
-		AVLTreeNode rightChild = inOrderSuccessor.getRightSubTree();
-		AVLTreeNode parent = inOrderSuccessor.getParent();
-		if (rightChild != null) {
-			rightChild.setParent(parent);
-		}
-		if (isLeftChild(inOrderSuccessor)) {
-			makeAsLeftChild(parent, rightChild);
-		} else if (isRightChild(inOrderSuccessor)) {
-			makeAsRightChild(parent, rightChild);
-		}
-		updateHeight(parent);
-	}
+        updateHeight(a);
+        updateHeight(c);
+        updateHeight(b);
+        return b;
+    }
 
-	private void replceDeletingNodeWithInOrderSuccessor(AVLTreeNode deleteingNode, AVLTreeNode inOrderSuccessor) {
-		AVLTreeNode parentOfDeletingNode = deleteingNode.getParent();
-		AVLTreeNode rightChildOfDeletingNode = deleteingNode.getRightSubTree();
-		AVLTreeNode leftChildOfDeletingNode = deleteingNode.getLeftSubTree();
+    private AVLTreeNode replaceDeletingWithItsOnlyChild(AVLTreeNode deletingNode) {
+        AVLTreeNode rightChild = deletingNode.getRightSubTree();
+        AVLTreeNode leftChild = deletingNode.getLeftSubTree();
+        AVLTreeNode nonNullChild = rightChild != null ? rightChild : leftChild;
+        AVLTreeNode parent = deletingNode.getParent();
+        if (nonNullChild != null) {
+            nonNullChild.setParent(parent);
+        }
+        if (isLeftChild(deletingNode)) {
+            makeAsLeftChild(parent, nonNullChild);
+        } else {
+            makeAsRightChild(parent, nonNullChild);
+        }
+        if (nonNullChild!=null && nonNullChild.getParent() == null) {
+            root = nonNullChild;
+        }
+        updateHeight(parent);
+        return nonNullChild;
+    }
 
-		if (isLeftChild(deleteingNode)) {
-			makeAsLeftChild(parentOfDeletingNode, inOrderSuccessor);
-		} else if (isRightChild(deleteingNode)) {
-			makeAsRightChild(parentOfDeletingNode, inOrderSuccessor);
-		} else {
-			inOrderSuccessor.setParent(parentOfDeletingNode);
-		}
-		makeAsLeftChild(inOrderSuccessor, leftChildOfDeletingNode);
-		makeAsRightChild(inOrderSuccessor, rightChildOfDeletingNode);
+    private void substituteInOrderSuccessorWithItsRightChild(AVLTreeNode inOrderSuccessor) {
+        AVLTreeNode rightChild = inOrderSuccessor.getRightSubTree();
+        AVLTreeNode parent = inOrderSuccessor.getParent();
+        if (rightChild != null) {
+            rightChild.setParent(parent);
+        }
+        if (isLeftChild(inOrderSuccessor)) {
+            makeAsLeftChild(parent, rightChild);
+        } else if (isRightChild(inOrderSuccessor)) {
+            makeAsRightChild(parent, rightChild);
+        }
+        updateHeight(parent);
+    }
 
-		if (inOrderSuccessor.getParent() == null) {
-			root = inOrderSuccessor;
-		}
-		updateHeight(inOrderSuccessor);
-	}
+    private void replceDeletingNodeWithInOrderSuccessor(AVLTreeNode deleteingNode, AVLTreeNode inOrderSuccessor) {
+        AVLTreeNode parentOfDeletingNode = deleteingNode.getParent();
+        AVLTreeNode rightChildOfDeletingNode = deleteingNode.getRightSubTree();
+        AVLTreeNode leftChildOfDeletingNode = deleteingNode.getLeftSubTree();
 
-	/**
-	 * Update height
-	 * 
-	 * @param node
-	 */
-	private void updateHeight(AVLTreeNode node) {
-		if (node != null) {
-			node.updateHeight();
-		}
-	}
+        if (isLeftChild(deleteingNode)) {
+            makeAsLeftChild(parentOfDeletingNode, inOrderSuccessor);
+        } else if (isRightChild(deleteingNode)) {
+            makeAsRightChild(parentOfDeletingNode, inOrderSuccessor);
+        } else {
+            inOrderSuccessor.setParent(parentOfDeletingNode);
+        }
+        makeAsLeftChild(inOrderSuccessor, leftChildOfDeletingNode);
+        makeAsRightChild(inOrderSuccessor, rightChildOfDeletingNode);
 
-	/**
-	 * Make b as the left child of a
-	 * 
-	 * @param node
-	 * @param child
-	 */
-	private void makeAsLeftChild(AVLTreeNode node, AVLTreeNode child) {
-		if (node == null)
-			return;
-		node.setLeftSubTree(child);
-		if (child != null)
-			child.setParent(node);
-	}
+        if (inOrderSuccessor.getParent() == null) {
+            root = inOrderSuccessor;
+        }
+        updateHeight(inOrderSuccessor);
+    }
 
-	/**
-	 * Make b as the right child of a
-	 * 
-	 * @param node
-	 * @param child
-	 */
-	private void makeAsRightChild(AVLTreeNode node, AVLTreeNode child) {
-		if (node == null)
-			return;
-		node.setRightSubTree(child);
-		if (child != null)
-			child.setParent(node);
-	}
+    /**
+     * Update height
+     *
+     * @param node
+     */
+    private void updateHeight(AVLTreeNode node) {
+        if (node != null) {
+            node.updateHeight();
+        }
+    }
 
-	private boolean isRightChild(AVLTreeNode node) {
-		if (node == null || node.getParent() == null)
-			return false;
-		return node.getParent().getRightSubTree() == node;
-	}
+    /**
+     * Make b as the left child of a
+     *
+     * @param node
+     * @param child
+     */
+    private void makeAsLeftChild(AVLTreeNode node, AVLTreeNode child) {
+        if (node == null)
+            return;
+        node.setLeftSubTree(child);
+        if (child != null)
+            child.setParent(node);
+    }
 
-	private boolean isLeftChild(AVLTreeNode node) {
-		if (node == null || node.getParent() == null)
-			return false;
-		return node.getParent().getLeftSubTree() == node;
-	}
+    /**
+     * Make b as the right child of a
+     *
+     * @param node
+     * @param child
+     */
+    private void makeAsRightChild(AVLTreeNode node, AVLTreeNode child) {
+        if (node == null)
+            return;
+        node.setRightSubTree(child);
+        if (child != null)
+            child.setParent(node);
+    }
 
-	private void leftLeftCase(AVLTreeNode node) {
-		rotateRight(node);
-	}
+    private boolean isRightChild(AVLTreeNode node) {
+        if (node == null || node.getParent() == null)
+            return false;
+        return node.getParent().getRightSubTree() == node;
+    }
 
-	private void leftRightCase(AVLTreeNode node) {
-		rotateLeft(node.getLeftSubTree());
-		rotateRight(node);
-	}
+    private boolean isLeftChild(AVLTreeNode node) {
+        if (node == null || node.getParent() == null)
+            return false;
+        return node.getParent().getLeftSubTree() == node;
+    }
 
-	private void rightRightCase(AVLTreeNode node) {
-		rotateLeft(node);
-	}
+    private void leftLeftCase(AVLTreeNode node) {
+        rotateRight(node);
+    }
 
-	private void rightLeftCase(AVLTreeNode node) {
-		rotateRight(node.getRightSubTree());
-		rotateLeft(node);
-	}
+    private void leftRightCase(AVLTreeNode node) {
+        rotateLeft(node.getLeftSubTree());
+        rotateRight(node);
+    }
 
-	private AVLTreeNode rotateRight(AVLTreeNode node) {
-		AVLTreeNode parent = node.getParent();
-		AVLTreeNode leftNode = node.getLeftSubTree();
-		AVLTreeNode leftNodeRightChild = leftNode.getRightSubTree();
+    private void rightRightCase(AVLTreeNode node) {
+        rotateLeft(node);
+    }
 
-		makeAsLeftChild(node, leftNodeRightChild);
+    private void rightLeftCase(AVLTreeNode node) {
+        rotateRight(node.getRightSubTree());
+        rotateLeft(node);
+    }
 
-		if (isLeftChild(node)) {
-			makeAsLeftChild(parent, leftNode);
-		} else if (isRightChild(node)) {
-			makeAsRightChild(parent, leftNode);
-		} else {
-			leftNode.setParent(parent);
-		}
+    private AVLTreeNode rotateRight(AVLTreeNode node) {
+        AVLTreeNode parent = node.getParent();
+        AVLTreeNode leftNode = node.getLeftSubTree();
+        AVLTreeNode leftNodeRightChild = leftNode.getRightSubTree();
 
-		makeAsRightChild(leftNode, node);
+        makeAsLeftChild(node, leftNodeRightChild);
 
-		updateHeight(node);
-		updateHeight(leftNode);
-		updateHeight(parent);
+        if (isLeftChild(node)) {
+            makeAsLeftChild(parent, leftNode);
+        } else if (isRightChild(node)) {
+            makeAsRightChild(parent, leftNode);
+        } else {
+            leftNode.setParent(parent);
+        }
 
-		if (leftNode.getParent() == null) {
-			root = leftNode;
-		}
-		return leftNode;
+        makeAsRightChild(leftNode, node);
 
-	}
+        updateHeight(node);
+        updateHeight(leftNode);
+        updateHeight(parent);
 
-	private AVLTreeNode rotateLeft(AVLTreeNode node) {
-		AVLTreeNode parent = node.getParent();
-		AVLTreeNode rightNode = node.getRightSubTree();
-		AVLTreeNode rightNodeLeftChild = rightNode.getLeftSubTree();
+        if (leftNode.getParent() == null) {
+            root = leftNode;
+        }
+        return leftNode;
 
-		makeAsRightChild(node, rightNodeLeftChild);
+    }
 
-		if (isLeftChild(node)) {
-			makeAsLeftChild(parent, rightNode);
-		} else if (isRightChild(node)) {
-			makeAsRightChild(parent, rightNode);
-		} else {
-			rightNode.setParent(parent);
-		}
+    private AVLTreeNode rotateLeft(AVLTreeNode node) {
+        AVLTreeNode parent = node.getParent();
+        AVLTreeNode rightNode = node.getRightSubTree();
+        AVLTreeNode rightNodeLeftChild = rightNode.getLeftSubTree();
 
-		makeAsLeftChild(rightNode, node);
+        makeAsRightChild(node, rightNodeLeftChild);
 
-		updateHeight(node);
-		updateHeight(rightNode);
-		updateHeight(parent);
-		if (rightNode.getParent() == null) {
-			root = rightNode;
-		}
-		return rightNode;
-	}
+        if (isLeftChild(node)) {
+            makeAsLeftChild(parent, rightNode);
+        } else if (isRightChild(node)) {
+            makeAsRightChild(parent, rightNode);
+        } else {
+            rightNode.setParent(parent);
+        }
 
-	public void display(AVLTreeNode travNode) {
-		if (root != null)
-			System.out.print(root.toString());
-	}
+        makeAsLeftChild(rightNode, node);
 
-	public static void main(String[] args) {
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		AVLTree avlTree = new AVLTree();
-		int menuItem = 6;
-		try {
-			do {
-				int value;
-				System.out.println("Menu\n1. Insert\n2. Insert from array\n3. Delete\n5. Display\n6. Exit");
-				menuItem = Integer.parseInt(bufferedReader.readLine());
-				switch (menuItem) {
-				case 1:
-					System.out.println("Enter node value");
-					value = Integer.parseInt(bufferedReader.readLine());
-					avlTree.insert(value);
-					break;
-				case 2:
-					System.out.println("Enter nodes as a list, enter a letter to stop");
-					Scanner scanner = new Scanner(System.in);
-					while (scanner.hasNextInt()) {
-						value = scanner.nextInt();
-						avlTree.insert(value);
-					}
-					break;
-				case 3:
-					System.out.println("Enter node value to delete");
-					value = Integer.parseInt(bufferedReader.readLine());
-					avlTree.delete(value);
-					break;
-				case 5:
-					avlTree.display(avlTree.root);
-					break;
-				}
+        updateHeight(node);
+        updateHeight(rightNode);
+        updateHeight(parent);
+        if (rightNode.getParent() == null) {
+            root = rightNode;
+        }
+        return rightNode;
+    }
 
-			} while (menuItem != 6);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void display() {
+        if (root != null)
+            System.out.print(root.toString());
+    }
 
-	private static class AVLTreeNode {
+    public static void main(String[] args) {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        AVLTree avlTree = new AVLTree();
+        int menuItem = 6;
+        try {
+            do {
+                int value;
+                System.out.println("Menu\n1. Insert\n2. Insert from array\n3. Delete\n5. Display\n6. Exit");
+                menuItem = Integer.parseInt(bufferedReader.readLine());
+                switch (menuItem) {
+                    case 1:
+                        System.out.println("Enter node value");
+                        value = Integer.parseInt(bufferedReader.readLine());
+                        avlTree.insert(value);
+                        break;
+                    case 2:
+                        System.out.println("Enter nodes as a list, enter a letter to stop");
+                        Scanner scanner = new Scanner(System.in);
+                        while (scanner.hasNextInt()) {
+                            value = scanner.nextInt();
+                            avlTree.insert(value);
+                        }
+                        break;
+                    case 3:
+                        System.out.println("Enter node value to delete");
+                        value = Integer.parseInt(bufferedReader.readLine());
+                        avlTree.delete(value);
+                        break;
+                    case 5:
+                        avlTree.display();
+                        break;
+                    default:
+                        System.out.println("Invalid choice");
+                }
 
-		private AVLTreeNode left;
-		private AVLTreeNode right;
-		private AVLTreeNode parent;
-		private int value;
-		private int height;
+            } while (menuItem != 6);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		public static AVLTreeNode createNode(int value) {
-			return new AVLTreeNode(value);
-		}
+    private static class AVLTreeNode {
 
-		public AVLTreeNode(int value) {
-			this.value = value;
-			this.height = 0;
-			this.parent = null;
-		}
+        private AVLTreeNode left;
+        private AVLTreeNode right;
+        private AVLTreeNode parent;
+        private int value;
+        private int height;
 
-		public int getHeight() {
-			return this.height;
-		}
+        public static AVLTreeNode createNode(int value) {
+            return new AVLTreeNode(value);
+        }
 
-		public void setHeight(int height) {
-			this.height = height;
-		}
+        public AVLTreeNode(int value) {
+            this.value = value;
+            this.height = 0;
+            this.parent = null;
+        }
 
-		public AVLTreeNode getLeftSubTree() {
-			return left;
-		}
+        public int getHeight() {
+            return this.height;
+        }
 
-		public AVLTreeNode getRightSubTree() {
-			return right;
-		}
+        public void setHeight(int height) {
+            this.height = height;
+        }
 
-		public int getValue() {
-			return value;
-		}
+        public AVLTreeNode getLeftSubTree() {
+            return left;
+        }
 
-		public void setParent(AVLTreeNode treeNode) {
-			this.parent = treeNode;
-		}
+        public AVLTreeNode getRightSubTree() {
+            return right;
+        }
 
-		public AVLTreeNode getParent() {
-			return parent;
-		}
+        public int getValue() {
+            return value;
+        }
 
-		public void setLeftSubTree(AVLTreeNode treeNode) {
-			this.left = treeNode;
-		}
+        public void setParent(AVLTreeNode treeNode) {
+            this.parent = treeNode;
+        }
 
-		public void setRightSubTree(AVLTreeNode treeNode) {
-			this.right = treeNode;
-		}
+        public AVLTreeNode getParent() {
+            return parent;
+        }
 
-		public void setValue(int value) {
-			this.value = value;
-		}
+        public void setLeftSubTree(AVLTreeNode treeNode) {
+            this.left = treeNode;
+        }
 
-		public boolean isBalanced() {
-			int leftHeight = left == null ? -1 : left.height;
-			int rightHeight = right == null ? -1 : right.height;
-			return Math.abs(leftHeight - rightHeight) <= 1;
-		}
+        public void setRightSubTree(AVLTreeNode treeNode) {
+            this.right = treeNode;
+        }
 
-		public void updateHeight() {
-			int leftHeight = left == null ? -1 : left.getHeight();
-			int rightHeight = right == null ? -1 : right.getHeight();
-			this.height = Math.max(leftHeight, rightHeight) + 1;
-		}
+        public void setValue(int value) {
+            this.value = value;
+        }
 
-		public StringBuilder toString(StringBuilder prefix, boolean isTail, StringBuilder sb) {
-			if (right != null) {
-				right.toString(new StringBuilder().append(prefix).append(isTail ? "|   " : "    "), false, sb);
-			}
-			sb.append(prefix).append(isTail ? "└── " : "┌── ").append(
-					value + "(" + (parent != null ? (parent.value + "{" + height + "}") : "{" + height + "}") + ")")
-					.append("\n");
-			if (left != null) {
-				left.toString(new StringBuilder().append(prefix).append(isTail ? "    " : "|   "), true, sb);
-			}
-			return sb;
-		}
+        public boolean isBalanced() {
+            int leftHeight = left == null ? -1 : left.height;
+            int rightHeight = right == null ? -1 : right.height;
+            return Math.abs(leftHeight - rightHeight) <= 1;
+        }
 
-		@Override
-		public String toString() {
-			return this.toString(new StringBuilder(), true, new StringBuilder()).toString();
-		}
+        public void updateHeight() {
+            int leftHeight = left == null ? -1 : left.getHeight();
+            int rightHeight = right == null ? -1 : right.getHeight();
+            this.height = Math.max(leftHeight, rightHeight) + 1;
+        }
 
-	}
+        public StringBuilder toString(StringBuilder prefix, boolean isTail, StringBuilder sb) {
+            if (right != null) {
+                right.toString(new StringBuilder().append(prefix).append(isTail ? "|   " : "    "), false, sb);
+            }
+            sb.append(prefix).append(isTail ? "└── " : "┌── ").append(
+                    value + "(" + (parent != null ? (parent.value + "{" + height + "}") : "{" + height + "}") + ")")
+                    .append("\n");
+            if (left != null) {
+                left.toString(new StringBuilder().append(prefix).append(isTail ? "    " : "|   "), true, sb);
+            }
+            return sb;
+        }
+
+        @Override
+        public String toString() {
+            return this.toString(new StringBuilder(), true, new StringBuilder()).toString();
+        }
+
+    }
 }
